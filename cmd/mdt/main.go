@@ -27,6 +27,10 @@ func main() {
 						Name:  "align",
 						Usage: "Sequence of alignment characters `dlrc `for each column. default (d), left (l), right (r) and center (c).",
 					},
+					&cli.BoolFlag{
+						Name:  "no-header",
+						Usage: "Do not interpret the first row as the table header",
+					},
 				},
 				Subcommands: []*cli.Command{
 					{

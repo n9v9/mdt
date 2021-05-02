@@ -45,6 +45,7 @@ func fromCsv(ctx *cli.Context) error {
 	table := &mdt.Table{
 		Rows:       records,
 		Alignments: alignments,
+		NoHeader:   ctx.Bool("no-header"),
 	}
 
 	fmt.Println(table)

@@ -1,4 +1,4 @@
-// Package mdt provides an API to work with markdown tables.
+// Package mdt provides an API to create markdown tables
 package mdt
 
 import (
