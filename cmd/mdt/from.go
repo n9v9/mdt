@@ -3,13 +3,14 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"os"
 	"unicode/utf8"
 
 	"github.com/n9v9/mdt"
 	"github.com/urfave/cli/v2"
 )
 
-func fromCsv(ctx *cli.Context) error {
+func fromCsv(ctx *cli.Context) (err error) {
 	align := ctx.String("align")
 	alignments := make([]mdt.TableAlignment, 0, len(align))
 
@@ -31,7 +32,13 @@ func fromCsv(ctx *cli.Context) error {
 	delimiter, _ := utf8.DecodeRuneInString(ctx.String("delimiter"))
 
 	rc := inputFile(ctx.Context)
-	defer rc.Close()
+
+	defer func() {
+		closeErr := rc.Close()
+		if err == nil {
+			err = closeErr
+		}
+	}()
 
 	r := csv.NewReader(rc)
 	r.TrimLeadingSpace = true
@@ -39,7 +46,7 @@ func fromCsv(ctx *cli.Context) error {
 
 	records, err := r.ReadAll()
 	if err != nil {
-		return err
+		return
 	}
 
 	table := &mdt.Table{
@@ -48,7 +55,28 @@ func fromCsv(ctx *cli.Context) error {
 		NoHeader:   ctx.Bool("no-header"),
 	}
 
-	fmt.Println(table)
+	_, err = fmt.Println(table)
 
-	return nil
+	return
+}
+
+func fromMarkdown(ctx *cli.Context) (err error) {
+	rc := inputFile(ctx.Context)
+
+	defer func() {
+		closeErr := rc.Close()
+		if err == nil {
+			err = closeErr
+		}
+	}()
+
+	table, err := mdt.ParseTable(rc, ctx.Bool("no-header"))
+	if err != nil {
+		return
+	}
+
+	w := csv.NewWriter(os.Stdout)
+	w.Comma = rune(ctx.String("delimiter")[0])
+
+	return w.WriteAll(table.Rows)
 }
