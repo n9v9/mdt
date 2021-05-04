@@ -2,6 +2,7 @@ package mdt
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -109,6 +110,48 @@ func TestTable(t *testing.T) {
 	})
 }
 
+func TestParseTable(t *testing.T) {
+	t.Run("no header", func(t *testing.T) {
+		markdown := `| id | firstname | lastname |
+| 1 | john | doe |
+| 2 | jane | doe |
+| 3 | escaped \| pipe | test |`
+
+		want := &Table{
+			Rows: [][]string{
+				{"id", "firstname", "lastname"},
+				{"1", "john", "doe"},
+				{"2", "jane", "doe"},
+				{"3", "escaped | pipe", "test"},
+			},
+			NoHeader: true,
+		}
+
+		got, err := ParseTable(strings.NewReader(markdown), true)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		diff(t, "no header", want, got)
+	})
+
+	t.Run("alignment", func(*testing.T) {
+		input := "| --- | :-- | :-: | --: | ----- | :---- | :---: | ----: |"
+		want := []TableAlignment{
+			AlignDefault,
+			AlignLeft,
+			AlignCenter,
+			AlignRight,
+			AlignDefault,
+			AlignLeft,
+			AlignCenter,
+			AlignRight,
+		}
+
+		diff(t, "alignment", want, parseAlignment(input))
+	})
+}
+
 func ExampleTable_default() {
 	rows := [][]string{
 		{"id", "firstname", "lastname"},
@@ -161,6 +204,25 @@ func ExampleTable_alignOne() {
 	// Output:
 	// | id  | firstname | lastname   |
 	// | :-: | :-------: | :--------: |
+	// | 1   | john      | doe        |
+	// | 2   | jane      | doe        |
+	// | 3   | max       | mustermann |
+}
+
+func ExampleParseTable() {
+	markdown := `| id  | firstname | lastname   |
+| --- | :-------- | :--------: |
+| 1   | john      | doe        |
+| 2   | jane      | doe        |
+| 3   | max       | mustermann |`
+
+	t := ParseTable(markdown, false)
+	// t now contains the parsed rows and alignments
+	// and can be converted back to markdown.
+	fmt.Print(t.String())
+	// Output:
+	// | id  | firstname | lastname   |
+	// | --- | :-------- | :--------: |
 	// | 1   | john      | doe        |
 	// | 2   | jane      | doe        |
 	// | 3   | max       | mustermann |

@@ -2,8 +2,10 @@
 package mdt
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"strings"
 	"text/tabwriter"
 )
@@ -34,6 +36,7 @@ type Table struct {
 	Alignments []TableAlignment
 }
 
+// String returns the table as a markdown string.
 func (t *Table) String() string {
 	// Map each column index to its maximum length:
 	// 0 -> max len of all strings in column 0
@@ -128,4 +131,84 @@ func (t *Table) String() string {
 	_ = tw.Flush()
 
 	return buf.String()
+}
+
+// ParseTable parses the given markdown into a Table.
+// markdown must be in a valid markdown table representation.
+// If noHeader is true then the second row, the alignment row, will be parsed as normal data.
+func ParseTable(r io.Reader, noHeader bool) (*Table, error) {
+	var (
+		rows       [][]string
+		alignments []TableAlignment
+		s          = bufio.NewScanner(r)
+		rowIdx     int
+	)
+
+	for s.Scan() {
+		row := strings.TrimSpace(s.Text())
+		if rowIdx == 1 && !noHeader {
+			alignments = parseAlignment(row)
+			rowIdx++
+			continue
+		}
+
+		var (
+			cols        []string
+			col         strings.Builder
+			pipeEscaped bool
+		)
+		// Skip the first character as it must always be the pipe character.
+		for i := 1; i < len(row); i++ {
+			switch v := row[i]; v {
+			case '\\':
+				// To show a literal pipe character in row, it must be escaped.
+				// When parsing we don't escape it.
+				if row[i+1] == '|' {
+					pipeEscaped = true
+				}
+			case '|':
+				if pipeEscaped {
+					pipeEscaped = false
+					col.WriteByte(v)
+				} else {
+					cols = append(cols, strings.TrimSpace(col.String()))
+					col.Reset()
+				}
+			default:
+				col.WriteByte(v)
+			}
+		}
+
+		rows = append(rows, cols)
+		rowIdx++
+	}
+
+	return &Table{
+		Rows:       rows,
+		Alignments: alignments,
+		NoHeader:   noHeader,
+	}, s.Err()
+}
+
+func parseAlignment(row string) []TableAlignment {
+	var alignments []TableAlignment
+
+	cols := strings.Split(row, "|")
+
+	// Skip the first and last items as they are empty because the row must start and end with
+	// the pipe character.
+	for _, col := range cols[1 : len(cols)-1] {
+		col := strings.TrimSpace(col)
+		if col[0] == ':' && col[len(col)-1] == ':' {
+			alignments = append(alignments, AlignCenter)
+		} else if col[0] == ':' {
+			alignments = append(alignments, AlignLeft)
+		} else if col[len(col)-1] == ':' {
+			alignments = append(alignments, AlignRight)
+		} else {
+			alignments = append(alignments, AlignDefault)
+		}
+	}
+
+	return alignments
 }
