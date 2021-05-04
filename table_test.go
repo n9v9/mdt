@@ -160,8 +160,8 @@ func ExampleTable_default() {
 		{"3", "max", "mustermann"},
 	}
 
-	t := Table{Rows: rows}
-	fmt.Print(t.String())
+	t := &Table{Rows: rows}
+	fmt.Print(t)
 	// Output:
 	// | id  | firstname | lastname   |
 	// | --- | --------- | ---------- |
@@ -180,8 +180,8 @@ func ExampleTable_alignSome() {
 
 	// Will align the first column to the left, the second to the right
 	// and the third with the default alignment.
-	t := Table{Rows: rows, Alignments: []TableAlignment{AlignLeft, AlignRight}}
-	fmt.Print(t.String())
+	t := &Table{Rows: rows, Alignments: []TableAlignment{AlignLeft, AlignRight}}
+	fmt.Print(t)
 	// Output:
 	// | id  | firstname | lastname   |
 	// | :-- | --------: | ---------- |
@@ -199,8 +199,8 @@ func ExampleTable_alignOne() {
 	}
 
 	// Will align all columns according to the single alignment given.
-	t := Table{Rows: rows, Alignments: []TableAlignment{AlignCenter}}
-	fmt.Print(t.String())
+	t := &Table{Rows: rows, Alignments: []TableAlignment{AlignCenter}}
+	fmt.Print(t)
 	// Output:
 	// | id  | firstname | lastname   |
 	// | :-: | :-------: | :--------: |
@@ -216,10 +216,10 @@ func ExampleParseTable() {
 | 2   | jane      | doe        |
 | 3   | max       | mustermann |`
 
-	t := ParseTable(markdown, false)
+	t, _ := ParseTable(strings.NewReader(markdown), false)
 	// t now contains the parsed rows and alignments
 	// and can be converted back to markdown.
-	fmt.Print(t.String())
+	fmt.Print(t)
 	// Output:
 	// | id  | firstname | lastname   |
 	// | --- | :-------- | :--------: |
