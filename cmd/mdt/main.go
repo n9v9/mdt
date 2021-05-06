@@ -10,7 +10,7 @@ import (
 func main() {
 	app := &cli.App{
 		Name:            "mdt",
-		Usage:           "Helps you work with markdown tables",
+		Usage:           "Convert markdown tables between markdown and the CSV format",
 		HideHelpCommand: true,
 		Flags: []cli.Flag{
 			&cli.StringFlag{
@@ -31,8 +31,8 @@ func main() {
 		},
 		Commands: []*cli.Command{
 			{
-				Name:            "csv",
-				Usage:           "Convert data in a CSV format into a markdown table",
+				Name:            "md",
+				Usage:           "Convert CSV formatted data into a markdown table",
 				HideHelpCommand: true,
 				Flags: []cli.Flag{
 					&cli.StringFlag{
@@ -43,8 +43,8 @@ func main() {
 				Action: fromCsv,
 			},
 			{
-				Name:            "md",
-				Usage:           "Convert a markdown table into CSV formatted data",
+				Name:            "csv",
+				Usage:           "Convert a markdown table into the CSV format",
 				HideHelpCommand: true,
 				Action:          fromMarkdown,
 			},
