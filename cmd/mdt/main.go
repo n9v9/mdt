@@ -7,6 +7,11 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+var (
+	version  = "development"
+	commitID string
+)
+
 func main() {
 	flagAlign := &cli.StringFlag{
 		Name:  "align",
@@ -22,6 +27,7 @@ func main() {
 		Name:            "mdt",
 		Usage:           "Convert markdown tables between markdown and the CSV format",
 		HideHelpCommand: true,
+		Version:         versionString(),
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "file",
@@ -76,4 +82,11 @@ func main() {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
+}
+
+func versionString() string {
+	if commitID == "" {
+		return version
+	}
+	return version + " " + commitID
 }
