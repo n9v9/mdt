@@ -13,6 +13,16 @@ vnoremap <silent><leader>mdt :!mdt md<CR>
 vnoremap <silent><leader>mdc :!mdt csv<CR>
 ```
 
+## Installation
+
+You can use `go get` to install the CLI via:
+
+```
+go get -u github.com/n9v9/mdt/cmd/mdt
+```
+
+or download the latest binary from the release page.
+
 ## Examples
 
 ### Markdown
