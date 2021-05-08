@@ -1,4 +1,4 @@
-// Package mdt provides an API to create markdown tables
+// Package mdt implements the building and parsing of markdown tables.
 package mdt
 
 import (
@@ -133,8 +133,8 @@ func (t *Table) String() string {
 	return buf.String()
 }
 
-// ParseTable parses the given markdown into a Table.
-// markdown must be in a valid markdown table representation.
+// ParseTable reads markdown from r and parses it into a Table.
+// r must provide a valid markdown table representation.
 // If noHeader is true then the second row, the alignment row, will be parsed as normal data.
 func ParseTable(r io.Reader, noHeader bool) (*Table, error) {
 	var (
