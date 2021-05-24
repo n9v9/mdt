@@ -13,7 +13,7 @@ import (
 // TableAlignment specifies the alignment of columns in a table.
 type TableAlignment int
 
-// Aligments for columns in a table.
+// Alignments for columns in a table.
 const (
 	AlignDefault TableAlignment = iota
 	AlignLeft
