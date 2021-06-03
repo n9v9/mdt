@@ -1,6 +1,7 @@
 # mdt - markdown tables
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/n9v9/mdt.svg)](https://pkg.go.dev/github.com/n9v9/mdt)
+[![Go Report Card](https://goreportcard.com/badge/n9v9/mdt)](https://goreportcard.com/report/n9v9/mdt)
 
 `mdt` assists you when working with markdown tables.
 
