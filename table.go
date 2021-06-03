@@ -165,6 +165,8 @@ func ParseTable(r io.Reader, noHeader bool) (*Table, error) {
 				// When parsing we don't escape it.
 				if row[i+1] == '|' {
 					pipeEscaped = true
+				} else {
+					col.WriteByte(v)
 				}
 			case '|':
 				if pipeEscaped {

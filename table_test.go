@@ -115,7 +115,8 @@ func TestParseTable(t *testing.T) {
 		markdown := `| id | firstname | lastname |
 | 1 | john | doe |
 | 2 | jane | doe |
-| 3 | escaped \| pipe | test |`
+| 3 | escaped \| pipe | test |
+| 4 | backslash \ in | column |`
 
 		want := &Table{
 			Rows: [][]string{
@@ -123,6 +124,7 @@ func TestParseTable(t *testing.T) {
 				{"1", "john", "doe"},
 				{"2", "jane", "doe"},
 				{"3", "escaped | pipe", "test"},
+				{"4", `backslash \ in`, "column"},
 			},
 			NoHeader: true,
 		}
